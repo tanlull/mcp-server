@@ -55,7 +55,7 @@ To use this server with the Claude Desktop app, add the following configuration 
     "mssql": {
       "command": "node",
       "args": [
-        "/YOUR PATH/mcp-server/Bangkok-MCP-Server/src/mssql/dist/index.js",
+        "/YOUR PATH/mcp-server-main/Bangkok-MCP-Server/src/mssql/dist/index.js",
         "{\"server\":\"MSSQL IP ADDRESS\",\"database\":\"DATABASE NAME\",\"user\":\"USERNAME\",\"password\":\"PASSWORD\",\"options\":{\"trustServerCertificate\":true}}"
       ]
     }
