@@ -26,16 +26,15 @@ To use this server with the Claude Desktop app, add the following configuration 
 
 ```json
 {
- "mcpServers": {
-   "mssql": {
-     "command": "npx",
-     "args": [
-       "-y",
-       "@modelcontextprotocol/server-mssql", 
-       "mssql://user:password@host/database"
-     ]
-   }
- }
+  "mcpServers": {
+    "mssql": {
+      "command": "node",
+      "args": [
+        "/Volumes/Extreme SSD/mcp-server/Bangkok-MCP-Server/src/mssql/dist/index.js",
+        "{\"server\":\"34.87.129.116\",\"database\":\"TestDB\",\"user\":\"SA\",\"password\":\"Passw0rd123456\",\"options\":{\"trustServerCertificate\":true}}"
+      ]
+    }
+  }
 }
 ```
 
