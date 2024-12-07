@@ -37,7 +37,7 @@ npm --version
 # Install additional required dependencies
 brew install uv git sqlite3
 ```
-## Server Setup
+### Server Setup
 
 Clone the repository:
 
@@ -62,3 +62,18 @@ To use this server with the Claude Desktop app, add the following configuration 
   }
 }
 ```
+Replace the connection string with your database credentials.
+
+## Connection Configuration
+
+The server supports the following connection options:
+
+- User authentication
+- Connection pooling (max 10 connections)
+- TLS/SSL encryption (configurable) 
+- Idle timeout management
+- Trust server certificate options
+
+## License
+
+This MCP server is licensed under the MIT License. This means you are free to use, modify, and distribute the software, subject to the terms and conditions of the MIT License. For more details, please see the LICENSE file in the project repository.
