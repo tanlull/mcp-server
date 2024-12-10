@@ -1,0 +1,18 @@
+{
+ "mcpServers": {
+   "filesystem": {
+     "command": "npx",
+     "args": [
+       "-y",
+       "@modelcontextprotocol/server-filesystem",
+       "/Users/grizzlyimacssd/Desktop"
+     ]
+   },
+   "mssql": {
+     "command": "node",
+     "args": [
+       "/Users/grizzlyimacssd/Desktop/src/mssql/dist/index.js"
+     ]
+   }
+ }
+}
