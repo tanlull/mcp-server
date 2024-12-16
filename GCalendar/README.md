@@ -1,81 +1,73 @@
+```markdown
 # Google Calendar MCP Server - Python Installation Guide
 
 A Model Context Protocol server that provides access to Google Calendar API with support for asynchronous operations.
 
-## Components
+# Components
 
-### Tools
-- list
-   • List calendar events from the past 2 years to 1 year in future
-   • No input parameters required
-   • Events are cached for optimal performance
+## Tools
 
-- create-event
-   • Input: `summary` (string): Event title
-   • Input: `start_time` (string): Start time in YYYY-MM-DDTHH:MM:SS format or date in YYYY-MM-DD format
-   • Input: `end_time` (string, optional): End time. If not provided, event will be 1 hour long
-   • Input: `description` (string, optional): Event description
+### list
+- Execute queries to list calendar events from the past 2 years to 1 year in future
+- No input parameters required
+- Events are cached in memory for optimal performance
 
-- delete-duplicates
-   • Input: `target_date` (string): Target date in YYYY-MM-DD format
-   • Input: `event_summary` (string): Event title to match
+### create-event
+- Create new calendar events with specified parameters
+- Input: `summary` (string): Event title
+- Input: `start_time` (string): Start time in YYYY-MM-DDTHH:MM:SS format or date in YYYY-MM-DD format
+- Input: `end_time` (string, optional): End time. If not provided, event will be 1 hour long
+- Input: `description` (string, optional): Event description
 
-- delete-event
-   • Input: `event_time` (string): Event time from list output
-   • Input: `event_summary` (string): Event title to match
+### delete-duplicates
+- Remove duplicate events on a specific date
+- Input: `target_date` (string): Target date in YYYY-MM-DD format
+- Input: `event_summary` (string): Event title to match
 
-### Resources
-- Token Management (`credentials/*.json`)
-   • OAuth 2.0 authentication
-   • Automatic token refresh
-   • JSON token information
-   • Automatically discovered at runtime
+### delete-event
+- Delete a single calendar event
+- Input: `event_time` (string): Event time from list output
+- Input: `event_summary` (string): Event title to match
 
-- Logging System (`logs/*.log`)
-   • Detailed operation logs
-   • Error tracking and reporting
+# Installation (Conda Environment)
 
-## Installation (Conda Environment)
+## Prerequisites
 
-Prerequisites:
 First, ensure you have Conda installed on your system:
 
-'''
+```bash
 # Install Conda using Homebrew
 brew install miniforge
 
-# Verify installation
+# Verify Conda installation
 conda --version
 
-# Create conda environment
+# Create dedicated conda environment
 conda create -n mcp-gcalendar python=3.9
 
-# Activate environment
+# Activate the environment
 conda activate mcp-gcalendar
 
-# Install dependencies
+# Install required packages
 pip install -r requirements.txt
-'''
+```
 
-Server Setup:
-Clone the repository:
+# Server Setup
 
-'''
+Clone the repository and set up the required directories:
+
+```bash
 # Clone repository
 git clone https://github.com/yourusername/GCalendar.git
-
-# Move to project directory
 cd GCalendar
-
-# Create required directories
 mkdir -p credentials logs
-'''
+```
 
-## Usage with Claude Desktop
+# Usage with Claude Desktop
 
-To use this server with the Claude Desktop app, add the following configuration to the "mcpServers" section of your `claude_desktop_config.json`:
+Add the following configuration to your `claude_desktop_config.json`:
 
-'''
+```json
 {
   "mcpServers": {
     "gcalendar": {
@@ -86,30 +78,29 @@ To use this server with the Claude Desktop app, add the following configuration 
     }
   }
 }
-'''
+```
 
-Replace paths according to your system:
+Replace path placeholders:
 - YOUR_CONDA_PATH examples:
-   • M1/M2 Mac with Miniforge: /opt/homebrew/Caskroom/miniforge/base
-   • Miniconda: ~/miniconda3 or /opt/miniconda3
-- YOUR_PATH: Full path to where you cloned the repository
+  - M1/M2 Mac with Miniforge: `/opt/homebrew/Caskroom/miniforge/base`
+  - Miniconda: `~/miniconda3` or `/opt/miniconda3`
+- YOUR_PATH: Full path to your cloned repository location
 
-## Configuration
+# Connection Configuration
 
-Create required files that are not included in repository:
+## Credentials Setup
+- Create a credentials directory
+- Download credentials.json from Google Cloud Console
+- Generate token.json using create_token.py script
 
-- Credentials Setup:
-   • Create credentials directory
-   • Add credentials.json from Google Cloud Console
-   • Run create_token.py to generate token.json
+## Connection Settings
+- OAuth 2.0 authentication protocol
+- Automatic token refresh mechanism
+- 60-second default timeout
+- Automatic retry on transient errors
+- Event caching enabled by default
 
-- Connection Settings:
-   • OAuth 2.0 authentication
-   • Token auto-refresh
-   • 60s default timeout
-   • Automatic error retry
-   • Event caching enabled
+# License
 
-## License
-
-This MCP server is licensed under the MIT License. This means you are free to use, modify, and distribute the software, subject to the terms and conditions of the MIT License. For more details, please see the LICENSE file in the project repository.
+This project is licensed under the MIT License. See LICENSE file for details.
+```
