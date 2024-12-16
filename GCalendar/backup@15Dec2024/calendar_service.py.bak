@@ -1,0 +1,256 @@
+from google.oauth2.credentials import Credentials
+from google.auth.transport.requests import Request
+from googleapiclient.discovery import build
+from googleapiclient.errors import HttpError
+from datetime import datetime, timedelta
+import logging
+import asyncio
+import os
+import json
+from zoneinfo import ZoneInfo
+
+# Set up logging
+logging.basicConfig(
+    level=logging.INFO,
+    format='[%(asctime)s] %(levelname)s: %(message)s',
+    datefmt='%Y-%m-%d %H:%M:%S'
+)
+logger = logging.getLogger(__name__)
+
+class CalendarService:
+    SCOPES = ['https://www.googleapis.com/auth/calendar']
+    TIMEZONE = 'Asia/Bangkok'
+    
+    def __init__(self, credentials_path: str, token_path: str):
+        self.credentials_path = credentials_path
+        self.token_path = token_path
+        self.creds = None
+        self.service = None
+        self.tz = ZoneInfo(self.TIMEZONE)
+
+    async def authenticate(self):
+        """Authenticate with Google Calendar API"""
+        try:
+            self.creds = Credentials.from_authorized_user_file(self.token_path, self.SCOPES)
+            
+            # Check if credentials are expired and refresh if needed
+            if self.creds and self.creds.expired and self.creds.refresh_token:
+                logger.info("Token expired, refreshing...")
+                self.creds.refresh(Request())
+                # Save refreshed credentials
+                with open(self.token_path, 'w') as token:
+                    token.write(self.creds.to_json())
+                logger.info("Token refreshed and saved")
+                    
+            self.service = build('calendar', 'v3', credentials=self.creds)
+            logger.info("Authentication successful")
+            return True
+        except Exception as e:
+            logger.error(f"Authentication error: {str(e)}")
+            raise
+
+    async def renew_token(self):
+        """Manually renew the token with 1 day expiry"""
+        try:
+            # Load existing token
+            with open(self.token_path, 'r') as f:
+                token_data = json.load(f)
+            
+            # Create credentials object
+            self.creds = Credentials.from_authorized_user_info(token_data, self.SCOPES)
+            
+            # Force refresh token
+            logger.info("Manually refreshing token...")
+            self.creds.refresh(Request())
+            
+            # Set new expiry to 1 day from now
+            new_expiry = datetime.now(self.tz) + timedelta(days=1)
+            token_data = json.loads(self.creds.to_json())
+            token_data['expiry'] = new_expiry.isoformat()
+            
+            # Save updated token
+            with open(self.token_path, 'w') as f:
+                json.dump(token_data, f, indent=2)
+            
+            logger.info(f"Token renewed successfully. New expiry: {new_expiry}")
+            return True
+            
+        except Exception as e:
+            logger.error(f"Token renewal error: {str(e)}")
+            raise
+
+    def _format_event_time(self, event: dict) -> str:
+        """Format event time consistently with timezone"""
+        start = event['start'].get('dateTime', event['start'].get('date'))
+        if 'T' in start:  # This is a datetime
+            dt = datetime.fromisoformat(start)
+            if dt.tzinfo is None:  # Add timezone if not present
+                dt = dt.replace(tzinfo=self.tz)
+            formatted_time = dt.strftime('%Y-%m-%dT%H:%M:%S%z')
+        else:  # This is a date
+            formatted_time = start
+        return formatted_time
+
+    async def list_events(self, max_results: int = 1000):  # เปลี่ยนจาก 100 เป็น 1000
+        """List calendar events"""
+        try:
+            if not self.service:
+                await self.authenticate()
+
+            logger.info("Fetching calendar events...")
+            
+            # Set time range to include both past and future events
+            now = datetime.now(self.tz)
+            two_years_ago = now - timedelta(days=730)
+            one_year_later = now + timedelta(days=365)
+            
+            logger.info(f"Fetching events from {two_years_ago} to {one_year_later}")
+            
+            events_result = await asyncio.get_event_loop().run_in_executor(
+                None,
+                lambda: self.service.events().list(
+                    calendarId='primary',
+                    timeMin=two_years_ago.isoformat(),
+                    timeMax=one_year_later.isoformat(),
+                    maxResults=max_results,
+                    singleEvents=True,
+                    orderBy='startTime',
+                    timeZone=self.TIMEZONE
+                ).execute()
+            )
+            
+            events = events_result.get('items', [])
+            logger.info(f"Found {len(events)} events")
+
+            if not events:
+                return "No events found."
+
+            # Format events
+            formatted_text = ""
+            for event in events:
+                start_time = self._format_event_time(event)
+                summary = event.get('summary', 'No title')
+                formatted_text += f"{start_time} {summary}\n"
+            
+            return formatted_text
+
+        except HttpError as error:
+            error_msg = f"An error occurred: {str(error)}"
+            logger.error(error_msg)
+            return error_msg
+
+    async def create_event(self, summary: str, start_time: str, end_time: str = None, description: str = None):
+        """
+        Create a new calendar event
+        
+        Parameters:
+        - summary: Event title
+        - start_time: Start time in ISO format (YYYY-MM-DDTHH:MM:SS) or date (YYYY-MM-DD)
+        - end_time: Optional end time in same format as start_time. If not provided, event will be 1 hour long
+        - description: Optional event description
+        
+        Returns:
+        - Created event details as string
+        """
+        try:
+            if not self.service:
+                await self.authenticate()
+
+            logger.info(f"Creating event: {summary}")
+            
+            # Parse start time
+            try:
+                # Try parsing as datetime
+                start_dt = datetime.fromisoformat(start_time)
+                if start_dt.tzinfo is None:
+                    start_dt = start_dt.replace(tzinfo=self.tz)
+                is_all_day = False
+            except ValueError:
+                try:
+                    # Try parsing as date
+                    start_dt = datetime.strptime(start_time, '%Y-%m-%d')
+                    is_all_day = True
+                except ValueError:
+                    raise ValueError("Invalid start_time format. Use YYYY-MM-DDTHH:MM:SS or YYYY-MM-DD")
+
+            # Handle end time
+            if end_time:
+                try:
+                    end_dt = datetime.fromisoformat(end_time)
+                    if end_dt.tzinfo is None:
+                        end_dt = end_dt.replace(tzinfo=self.tz)
+                    if is_all_day and end_dt.hour == 0 and end_dt.minute == 0:
+                        is_all_day = True
+                    else:
+                        is_all_day = False
+                except ValueError:
+                    try:
+                        end_dt = datetime.strptime(end_time, '%Y-%m-%d')
+                        if is_all_day:
+                            end_dt = end_dt + timedelta(days=1)  # For all-day events, end date should be the next day
+                    except ValueError:
+                        raise ValueError("Invalid end_time format. Use YYYY-MM-DDTHH:MM:SS or YYYY-MM-DD")
+            else:
+                if is_all_day:
+                    end_dt = start_dt + timedelta(days=1)  # All-day event defaults to 1 day
+                else:
+                    end_dt = start_dt + timedelta(hours=1)  # Default duration is 1 hour
+
+            # Create event body
+            event = {
+                'summary': summary,
+                'start': {},
+                'end': {},
+                'timeZone': self.TIMEZONE
+            }
+
+            if is_all_day:
+                event['start']['date'] = start_dt.date().isoformat()
+                event['end']['date'] = end_dt.date().isoformat()
+            else:
+                event['start']['dateTime'] = start_dt.isoformat()
+                event['end']['dateTime'] = end_dt.isoformat()
+
+            if description:
+                event['description'] = description
+
+            # Create event
+            created_event = await asyncio.get_event_loop().run_in_executor(
+                None,
+                lambda: self.service.events().insert(
+                    calendarId='primary',
+                    body=event
+                ).execute()
+            )
+            
+            # Format response using the same formatting function as list_events
+            start = self._format_event_time(created_event)
+            end = self._format_event_time({'start': created_event['end']})
+            
+            response = f"Event created successfully:\n"
+            response += f"Title: {created_event.get('summary')}\n"
+            response += f"Start: {start}\n"
+            response += f"End: {end}\n"
+            if description:
+                response += f"Description: {created_event.get('description')}\n"
+            
+            logger.info(f"Event created: {created_event.get('id')}")
+            return response
+
+        except HttpError as error:
+            error_msg = f"An error occurred: {str(error)}"
+            logger.error(error_msg)
+            return error_msg
+        except ValueError as error:
+            error_msg = str(error)
+            logger.error(f"Validation error: {error_msg}")
+            return error_msg
+        except Exception as error:
+            error_msg = f"Unexpected error: {str(error)}"
+            logger.error(error_msg)
+            return error_msg
+
+    def close(self):
+        """Clean up resources"""
+        if self.service:
+            self.service.close()

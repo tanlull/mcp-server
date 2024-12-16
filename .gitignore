@@ -1,2 +1,13 @@
 **/node_modules/
 claude_desktop_config.json
+
+# Additional ignores
+credentials/*.json
+**/credentials.json
+**/token.json
+*.orig
+*.py[cod]
+__pycache__/
+.DS_Store
+logs/
+*.log
