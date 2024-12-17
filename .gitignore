@@ -15,3 +15,7 @@ logs/
 **/.env
 **/messages.json
 **/mcp_server.log
+
+# Backup folders
+**/backup/
+**/backup.*
