@@ -112,6 +112,7 @@ python src/webhook_server.py
 
 Verify services are running:
 - Webhook server: http://localhost:8000 should return "LINE Webhook Server is running"
+- Webhook settings in LINE developers should be same as the "Forwarding" of Ngrok
 
 ### Server Configuration
 Add to `claude_desktop_config.json`:
