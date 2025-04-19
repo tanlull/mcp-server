@@ -42,18 +42,18 @@
    {
      "mcpServers": {
        "mcp-rag-qdrant-1.0": {
-         "command": "/path/to/conda/bin/python",
-         "args": [
-        "-m",
-        "ragdocs.server"
-      ],
-      "env": {
-        "QDRANT_URL": "http://34.27.111.38:6333",
-        "QDRANT_COLLECTION": "documentation",
-        "EMBEDDING_PROVIDER": "ollama",
-        "OLLAMA_URL": "http://localhost:11434"
-      }
-       }
+          "command": "/opt/homebrew/Caskroom/miniforge/base/envs/mcp-rag-qdrant-1.0/bin/python",
+          "args": [
+            "-m",
+            "ragdocs.server"
+          ],
+          "env": {
+            "QDRANT_URL": "http://34.27.111.38:6333",
+            "QDRANT_COLLECTION": "documentation",
+            "EMBEDDING_PROVIDER": "ollama",
+            "OLLAMA_URL": "http://localhost:11434"
+          }
+        }
      }
    }
    ```
