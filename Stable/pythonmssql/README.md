@@ -1,0 +1,68 @@
+# MSSQL Server for MSSQL สำหรับ Mac/Linux
+
+
+## วิธีการติดตั้ง MCP server for MSSQL เฉพาะกรณียังไม่เคยติดตั้งมาก่อน
+
+### 1. ติดตั้ง python และ framework ที่เกี่ยวข้อง ด้วย conda
+```bash
+# ติดตั้ง python และ framework ที่เกี่ยวข้อง
+conda env create -f environment.yml
+# เปิดใช้งานสิ่งที่ติดตั้งไป (environment)
+conda activate mcp-mssql-1.0
+```
+
+หากมี error ให้สอบถาม TA ห้ามไปต่อ!!!
+
+### 2. ตรวจสอบ path ของ python ติดตั้ง
+```bash
+which python
+```
+
+copy หรือ จดไว้ เดี๋ยวจะต้องนำ path ของ python นี้ไปใช้
+
+### 3. วิธีการใช้งาน MCP Server for MSSQL
+3.1 ตั้งค่า Claude Desktop ให้ใช้ MCP Server:
+   - ค้นหา claude_desktop_config.json ที่อยู่ภายในเครื่อง หากไม่พบ ให้สอบถาม TA
+   - เพิ่มการตั้งค่า:
+     ```json
+     {
+       "mcpServers": {
+         "mcp-mssql-1.0": {
+           "command": "/path/to/your/python",
+           "args": ["/path/to/your/mssql_server.py"]
+         }
+       }
+     }
+     ```
+   - ทบทวนว่าได้เปลี่ยน path ครบ 2 ตำแหน่งแล้วหรือยัง หากทำแล้วให้บันทึกและปิด
+
+### 4. รีสตาร์ท Claude Desktop และเริ่มใช้งาน
+
+## วิธีแก้ไขปัญหาทั่วไป
+
+### ถ้า MCP Server ไม่สามารถเชื่อมต่อกับฐานข้อมูล
+
+1. ตรวจสอบว่าเซิร์ฟเวอร์ MSSQL กำลังทำงานอยู่และสามารถเข้าถึงได้
+2. ตรวจสอบว่าข้อมูลการเชื่อมต่อ (เซิร์ฟเวอร์, ฐานข้อมูล, ชื่อผู้ใช้, รหัสผ่าน) ถูกต้อง
+3. ตรวจสอบว่าพอร์ต 1433 (พอร์ตมาตรฐานของ MSSQL) เปิดอยู่และสามารถเข้าถึงได้
+4. ลองเชื่อมต่อจากเครือข่ายอื่นเพื่อตรวจสอบว่าเป็นปัญหาเครือข่ายหรือไม่
+
+### ถ้า Claude Desktop ไม่เห็น MCP Server
+
+1. ตรวจสอบการตั้งค่าใน `claude_desktop_config.json`
+2. ตรวจสอบว่าได้กำหนดเส้นทางที่ถูกต้องของ Python และสคริปต์ MCP Server
+3. ตรวจสอบบันทึกของ Claude Desktop ที่:
+   ```bash
+   tail -f ~/Library/Logs/Claude/mcp*.log
+   ```
+
+## ข้อมูลการเชื่อมต่อกับ MSSQL สำหรับการเรียน
+
+```
+Server: 34.134.173.24
+Database: Telco
+Username: SA
+Password: Passw0rd123456
+```
+
+หากต้องการเปลี่ยนแปลงข้อมูลการเชื่อมต่อฯ ให้แก้ไขใน `mssql_server.py` และ `test_connection.py`

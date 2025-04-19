@@ -9,10 +9,10 @@ from typing import Dict, List, Any, Optional, Union
 from mcp.server.fastmcp import FastMCP
 
 # MSSQL connection details
-DB_SERVER = 'XXXXX'
-DB_NAME = 'XXXXX'
-DB_USER = 'XXXXX'
-DB_PASSWORD = 'XXXXX'
+DB_SERVER = '34.134.173.24'
+DB_NAME = 'Electric'
+DB_USER = 'SA'
+DB_PASSWORD = 'Passw0rd123456'
 
 # Initialize FastMCP server
 mcp = FastMCP("mssql-server")
