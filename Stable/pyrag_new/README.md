@@ -15,6 +15,9 @@
    ```bash
    chmod +x install_conda.sh
    ./install_conda.sh
+
+   conda activate mcp-rag-qdrant-1.0
+   pip install ollama
    ```
 
    สคริปต์จะทำสิ่งต่อไปนี้:
