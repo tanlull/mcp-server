@@ -1,5 +1,5 @@
 #!/bin/bash
-# Script for installing RAGDocs with Conda
+# Script for installing pyRAGDocs with Conda
 
 # Colors for terminal output
 GREEN='\033[0;32m'
@@ -7,8 +7,8 @@ YELLOW='\033[1;33m'
 RED='\033[0;31m'
 NC='\033[0m' # No Color
 
-echo -e "${GREEN}===== RAGDocs Conda Installer =====${NC}"
-echo -e "This will install RAGDocs using Conda for use with Claude Desktop\n"
+echo -e "${GREEN}===== pyRAGDocs Conda Installer =====${NC}"
+echo -e "This will install pyRAGDocs using Conda for use with Claude Desktop\n"
 
 # Check if conda is installed
 if ! command -v conda &> /dev/null; then
@@ -23,8 +23,8 @@ echo -e "${GREEN}Conda is installed:${NC}"
 echo "$conda_info" | grep -E "conda version|conda-build version|python version" | sed 's/^/  /'
 
 # Check if environment should be created
-read -p "Enter name for Conda environment (default: ragdocs): " env_name
-env_name=${env_name:-ragdocs}
+read -p "Enter name for Conda environment (default: mcp-rag-qdrant-1.0): " env_name
+env_name=${env_name:-mcp-rag-qdrant-1.0}
 
 # Check if environment exists
 if conda env list | grep -q "^$env_name "; then
@@ -75,8 +75,8 @@ echo -e "\n${YELLOW}Installing dependencies...${NC}"
 conda install -y -c conda-forge python-dotenv aiohttp beautifulsoup4 pymupdf || true
 pip install -r $CURRENT_DIR/requirements.txt
 
-# Install RAGDocs package
-echo -e "\n${YELLOW}Installing RAGDocs package...${NC}"
+# Install pyRAGDocs package
+echo -e "\n${YELLOW}Installing pyRAGDocs package...${NC}"
 pip install -e $CURRENT_DIR
 
 # Detect OS and configure Claude Desktop
@@ -108,7 +108,7 @@ echo -e "${GREEN}"
 cat << EOT
 {
   "mcpServers": {
-    "ragdocs": {
+    "mcp-rag-qdrant-1.0": {
       "command": "${CONDA_PYTHON}",
       "args": [
         "-m",
@@ -129,7 +129,7 @@ echo -e "${NC}"
 echo -e "\n${YELLOW}Creating run script with Conda activation...${NC}"
 cat > $CURRENT_DIR/run_conda.sh << EOT
 #!/bin/bash
-# Run RAGDocs with Conda environment
+# Run pyRAGDocs with Conda environment
 
 # Source conda.sh to get conda command
 source "\$(conda info --base)/etc/profile.d/conda.sh"
@@ -142,7 +142,7 @@ python -m ragdocs.server "\$@"
 EOT
 
 chmod +x $CURRENT_DIR/run_conda.sh
-echo -e "${GREEN}Created run_conda.sh script to run RAGDocs with Conda environment${NC}"
+echo -e "${GREEN}Created run_conda.sh script to run pyRAGDocs with Conda environment${NC}"
 
 # Check for Qdrant and Ollama
 echo -e "\n${YELLOW}Checking for required services...${NC}"
@@ -155,7 +155,7 @@ if curl -s http://localhost:6333/health > /dev/null; then
     qdrant_running=true
 else
     echo -e "${RED}✗ Qdrant server does not appear to be running on http://localhost:6333${NC}"
-    echo -e "   You'll need to install and start Qdrant before using RAGDocs"
+    echo -e "   You'll need to install and start Qdrant before using pyRAGDocs"
     echo -e "   Visit: https://qdrant.tech/documentation/guides/installation/"
 fi
 
@@ -164,17 +164,17 @@ if curl -s http://localhost:11434/api/health > /dev/null 2>&1; then
     ollama_running=true
 else
     echo -e "${RED}✗ Ollama server does not appear to be running on http://localhost:11434${NC}"
-    echo -e "   You'll need to install and start Ollama before using RAGDocs"
+    echo -e "   You'll need to install and start Ollama before using pyRAGDocs"
     echo -e "   Visit: https://ollama.ai/download"
 fi
 
 echo -e "\n${GREEN}Installation complete!${NC}"
-echo -e "\nTo use RAGDocs:"
+echo -e "\nTo use pyRAGDocs:"
 echo -e "1. Make sure Qdrant and Ollama are running"
 echo -e "2. Update your Claude Desktop configuration as shown above"
 echo -e "   NOTE: Make sure to use the full path to the Conda Python interpreter"
 echo -e "3. Restart Claude Desktop"
-echo -e "\nAlternatively, you can run RAGDocs with the run_conda.sh script"
+echo -e "\nAlternatively, you can run pyRAGDocs with the run_conda.sh script"
 echo -e "For more details, see the INSTALL.md and README_CONDA.md files"
 
 exit 0

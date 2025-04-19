@@ -1,14 +1,14 @@
-# การใช้ RAGDocs กับ Conda
+# MSSQL Server for RAG สำหรับ Mac/Linux
 
-คู่มือนี้จะแนะนำวิธีการติดตั้งและใช้งาน RAGDocs โดยใช้ Conda เป็นตัวจัดการแพ็กเกจและสภาพแวดล้อม
+คู่มือนี้จะแนะนำวิธีการติดตั้งและใช้งาน pyRAGDocs โดยใช้ Conda เป็นตัวจัดการแพ็กเกจและสภาพแวดล้อม
 
-## ข้อกำหนดก่อนเริ่มต้น
+## ข้อกำหนดก่อนเริ่มต้น - ไม่มีไม่ได้ครับ
 
 1. [Conda](https://docs.conda.io/en/latest/miniconda.html) (Miniconda หรือ Anaconda)
 2. [Qdrant](https://qdrant.tech/) (vector database สำหรับเก็บ embeddings)
 3. [Ollama](https://ollama.ai/) (สำหรับสร้าง embeddings แบบ local) หรือ API key ของ OpenAI
 
-## ขั้นตอนการติดตั้ง
+## วิธีการติดตั้ง MCP server for MSSQL เฉพาะกรณียังไม่เคยติดตั้งมาก่อน
 
 1. **ให้สิทธิ์และรันสคริปต์ติดตั้ง**
 
@@ -23,25 +23,32 @@
    - ติดตั้งแพ็กเกจที่จำเป็น
    - แสดงคำแนะนำสำหรับการตั้งค่า Claude Desktop
 
-2. **ตั้งค่า Claude Desktop**
+
+2. **ตรวจสอบ path ของ python ติดตั้ง**
+
+   ```bash
+   which python
+   ```
+
+3. **ตั้งค่า Claude Desktop**
 
    เปิดไฟล์ค่าปรับแต่ง Claude Desktop:
    - macOS: `~/Library/Application Support/Claude/claude_desktop_config.json`
    - Windows: `%APPDATA%\Claude\claude_desktop_config.json`
 
-   เพิ่มการตั้งค่าต่อไปนี้ (แทนที่ `/path/to/conda/bin/python` ด้วย path จริงที่แสดงในสคริปต์ติดตั้ง):
+   เพิ่มการตั้งค่าต่อไปนี้ (แทนที่ `/path/to/conda/bin/python` ด้วย path ของ python ติดตั้งไว้แล้ว):
 
    ```json
    {
      "mcpServers": {
-       "ragdocs": {
+       "mcp-rag-qdrant-1.0": {
          "command": "/path/to/conda/bin/python",
          "args": [
            "-m",
            "ragdocs.server"
          ],
          "env": {
-           "QDRANT_URL": "http://localhost:6333",
+           "QDRANT_URL": "http://34.27.111.38:6333",
            "EMBEDDING_PROVIDER": "ollama",
            "OLLAMA_URL": "http://localhost:11434"
          }
@@ -50,83 +57,17 @@
    }
    ```
 
-## การรันเซิร์ฟเวอร์ด้วยตัวเอง
+   ก่อนบันทึกและไปต่อ โปรดทบทวนว่าใช้ local ใน claude_desktop_config.json แล้วถูกต้องใช่หรือไม่ ถ้าไม่ใช่ต้องเปลี่ยน
 
-สคริปต์ติดตั้งสร้างไฟล์ `run_conda.sh` ที่จะเปิดใช้งาน Conda environment และรันเซิร์ฟเวอร์:
 
-```bash
-./run_conda.sh
-```
+## ข้อความปฏิเสธความรับผิดชอบ (Disclaimer)
 
-หากต้องการรันด้วยตัวเอง:
+ซอฟต์แวร์ "MCP Server for MSSQL" ("ซอฟต์แวร์") จัดทำขึ้นเพื่อวัตถุประสงค์ทางการศึกษาเท่านั้น ผู้พัฒนาและผู้สอนรวมถึงคณะทำงานที่เกี่ยวข้องไม่รับประกันความถูกต้อง ความสมบูรณ์ หรือความเหมาะสมสำหรับวัตถุประสงค์เฉพาะใดๆ ของซอฟต์แวร์นี้ ไม่ว่าจะโดยชัดแจ้งหรือโดยนัย
 
-```bash
-# เปิดใช้งาน conda environment
-conda activate ragdocs
+การใช้ซอฟต์แวร์นี้เป็นความรับผิดชอบของผู้ใช้แต่เพียงผู้เดียว ผู้พัฒนาและผู้สอนรวมถึงคณะทำงานที่เกี่ยวข้องจะไม่รับผิดชอบต่อความเสียหายใดๆ ทั้งทางตรง ทางอ้อม อุบัติเหตุ พิเศษ หรือเป็นผลสืบเนื่อง รวมถึงแต่ไม่จำกัดเพียงการสูญเสียข้อมูล การสูญเสียกำไร หรือการหยุดชะงักทางธุรกิจ อันเกิดจากการใช้หรือการไม่สามารถใช้ซอฟต์แวร์นี้ได้ แม้ว่าจะได้รับคำแนะนำถึงความเป็นไปได้ของความเสียหายดังกล่าวแล้วก็ตาม
 
-# รันเซิร์ฟเวอร์
-python -m ragdocs.server
-```
+ผู้ใช้รับทราบว่าซอฟต์แวร์นี้อาจมีข้อบกพร่องหรือความผิดพลาด และยอมรับความเสี่ยงทั้งหมดอันเกี่ยวเนื่องกับคุณภาพ ประสิทธิภาพ ความถูกต้อง และการทำงานของซอฟต์แวร์
 
-## การแก้ไขปัญหาเฉพาะสำหรับ Conda
+ผู้ใช้ต้องปฏิบัติตามกฎหมาย ระเบียบ และข้อบังคับที่เกี่ยวข้องทั้งหมดในการใช้ซอฟต์แวร์นี้ รวมถึงแต่ไม่จำกัดเพียงกฎหมายคุ้มครองข้อมูลส่วนบุคคล กฎหมายลิขสิทธิ์ และข้อตกลงการอนุญาตใช้สิทธิใดๆ ที่เกี่ยวข้อง
 
-1. **ไม่พบคำสั่ง conda**
-   ```bash
-   # ตรวจสอบว่าติดตั้ง conda แล้ว
-   which conda
-
-   # หากใช้ Anaconda/Miniconda แต่ไม่มีคำสั่ง conda ให้เพิ่มในตัวแปร PATH
-   export PATH="$HOME/miniconda3/bin:$PATH"  # แก้ไข path ตามการติดตั้งจริง
-   ```
-
-2. **พบปัญหากับ environment conda**
-   ```bash
-   # สร้าง environment ใหม่
-   conda create -n ragdocs python=3.10
-
-   # ดู environments ที่มีอยู่
-   conda env list
-
-   # ลบ environment ที่มีปัญหา
-   conda env remove -n ragdocs
-   ```
-
-3. **Python ใน Claude Desktop ไม่ได้ใช้ Conda environment**
-   
-   ตรวจสอบให้แน่ใจว่าใช้ path เต็มของ Python ใน Conda environment ในการตั้งค่า Claude Desktop:
-   
-   ```bash
-   # หา path เต็มของ Python ใน environment
-   conda activate ragdocs
-   which python
-   # ใช้ path ที่ได้ในการตั้งค่า "command" ใน claude_desktop_config.json
-   ```
-
-4. **แพ็กเกจบางตัวไม่ติดตั้งใน Conda**
-   
-   บางแพ็กเกจอาจไม่มีใน Conda repositories ซึ่งจะติดตั้งด้วย pip แทน:
-   
-   ```bash
-   conda activate ragdocs
-   pip install แพ็กเกจที่ต้องการ
-   ```
-
-## การตั้งค่า Environment Variables กับ Conda
-
-คุณสามารถตั้งค่า environment variables สำหรับ Conda environment ได้:
-
-```bash
-# ตั้งค่าเฉพาะการรันปัจจุบัน
-EMBEDDING_PROVIDER=openai python -m ragdocs.server
-
-# ตั้งค่าถาวรใน environment
-conda activate ragdocs
-conda env config vars set EMBEDDING_PROVIDER=openai
-conda activate ragdocs  # เปิดใช้งานใหม่เพื่อโหลดค่าตัวแปร
-```
-
-## คำแนะนำเพิ่มเติม
-
-- ใช้ `conda list` เพื่อดูแพ็กเกจที่ติดตั้งใน environment
-- ตรวจสอบ dependencies ด้วย `conda list --explicit > environment.txt`
-- สร้าง environment จากไฟล์ด้วย `conda env create -f environment.yml`
+การใช้ซอฟต์แวร์นี้ถือเป็นการยอมรับข้อกำหนดและเงื่อนไขทั้งหมดที่ระบุไว้ในข้อความปฏิเสธความรับผิดชอบนี้
