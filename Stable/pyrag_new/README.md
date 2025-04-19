@@ -1,104 +1,73 @@
-# RAGDocs - FastMCP Server for Documentation Retrieval
+# MSSQL Server for RAG สำหรับ Mac/Linux
 
-A lightweight, FastMCP-based server for Retrieval Augmented Generation with documentation.
+คู่มือนี้จะแนะนำวิธีการติดตั้งและใช้งาน pyRAGDocs โดยใช้ Conda เป็นตัวจัดการแพ็กเกจและสภาพแวดล้อม
 
-## Features
+## ข้อกำหนดก่อนเริ่มต้น - ไม่มีไม่ได้ครับ
 
-- Add documentation from URLs
-- Process local files and directories
-- Search through indexed documentation
-- List available sources
-- Built with FastMCP for clean, type-safe code
+1. [Conda](https://docs.conda.io/en/latest/miniconda.html) (Miniconda หรือ Anaconda)
+2. [Qdrant](https://qdrant.tech/) (vector database สำหรับเก็บ embeddings)
+3. [Ollama](https://ollama.ai/) (สำหรับสร้าง embeddings แบบ local) หรือ API key ของ OpenAI
 
-## Quick Install
+## วิธีการติดตั้ง MCP server for MSSQL เฉพาะกรณียังไม่เคยติดตั้งมาก่อน
 
-### Using pip (default)
+1. **ให้สิทธิ์และรันสคริปต์ติดตั้ง**
 
-```bash
-# Give execute permission to installer
-chmod +x install.sh
+   ```bash
+   chmod +x install_conda.sh
+   ./install_conda.sh
+   ```
 
-# Run installer
-./install.sh
-```
+   สคริปต์จะทำสิ่งต่อไปนี้:
+   - ตรวจสอบการติดตั้ง Conda
+   - สร้างหรือใช้ environment ที่มีอยู่ (ค่าเริ่มต้นชื่อ 'ragdocs')
+   - ติดตั้งแพ็กเกจที่จำเป็น
+   - แสดงคำแนะนำสำหรับการตั้งค่า Claude Desktop
 
-### Using Conda
 
-```bash
-# Give execute permission to installer
-chmod +x install_conda.sh
+2. **ตรวจสอบ path ของ python ติดตั้ง**
 
-# Run installer
-./install_conda.sh
-```
+   ```bash
+   which python
+   ```
 
-See [INSTALL.md](INSTALL.md) for pip-based installation or [README_CONDA.md](README_CONDA.md) for Conda-based installation.
+3. **ตั้งค่า Claude Desktop**
 
-## Environment Variables
+   เปิดไฟล์ค่าปรับแต่ง Claude Desktop:
+   - macOS: `~/Library/Application Support/Claude/claude_desktop_config.json`
+   - Windows: `%APPDATA%\Claude\claude_desktop_config.json`
 
-- `QDRANT_URL`: URL for Qdrant server (default: http://localhost:6333)
-- `QDRANT_COLLECTION`: Collection name in Qdrant (default: ragdocs)
-- `EMBEDDING_PROVIDER`: Provider for embeddings (ollama or openai)
-- `OLLAMA_URL`: URL for Ollama API (default: http://localhost:11434)
-- `EMBEDDING_MODEL`: Model to use for embeddings (default: nomic-embed-text)
-- `OPENAI_API_KEY`: API key for OpenAI (if using OpenAI provider)
+   เพิ่มการตั้งค่าต่อไปนี้ (แทนที่ `/path/to/conda/bin/python` ด้วย path ของ python ติดตั้งไว้แล้ว):
 
-## Usage
+   ```json
+   {
+     "mcpServers": {
+       "mcp-rag-qdrant-1.0": {
+         "command": "/path/to/conda/bin/python",
+         "args": [
+           "-m",
+           "ragdocs.server"
+         ],
+         "env": {
+           "QDRANT_URL": "http://34.27.111.38:6333",
+           "EMBEDDING_PROVIDER": "ollama",
+           "OLLAMA_URL": "http://localhost:11434"
+         }
+       }
+     }
+   }
+   ```
 
-### Running the Server
+   ก่อนบันทึกและไปต่อ โปรดทบทวนว่าใช้ local ใน claude_desktop_config.json แล้วถูกต้องใช่หรือไม่ ถ้าไม่ใช่ต้องเปลี่ยน
 
-```bash
-# Run with pip installation
-python -m ragdocs.server
 
-# Run with Conda installation
-./run_conda.sh
+## ข้อความปฏิเสธความรับผิดชอบ (Disclaimer)
 
-# Enable debug logging
-python -m ragdocs.server --debug
-```
+ซอฟต์แวร์ "MCP Server for MSSQL" ("ซอฟต์แวร์") จัดทำขึ้นเพื่อวัตถุประสงค์ทางการศึกษาเท่านั้น ผู้พัฒนาและผู้สอนรวมถึงคณะทำงานที่เกี่ยวข้องไม่รับประกันความถูกต้อง ความสมบูรณ์ หรือความเหมาะสมสำหรับวัตถุประสงค์เฉพาะใดๆ ของซอฟต์แวร์นี้ ไม่ว่าจะโดยชัดแจ้งหรือโดยนัย
 
-### Claude Desktop Configuration
+การใช้ซอฟต์แวร์นี้เป็นความรับผิดชอบของผู้ใช้แต่เพียงผู้เดียว ผู้พัฒนาและผู้สอนรวมถึงคณะทำงานที่เกี่ยวข้องจะไม่รับผิดชอบต่อความเสียหายใดๆ ทั้งทางตรง ทางอ้อม อุบัติเหตุ พิเศษ หรือเป็นผลสืบเนื่อง รวมถึงแต่ไม่จำกัดเพียงการสูญเสียข้อมูล การสูญเสียกำไร หรือการหยุดชะงักทางธุรกิจ อันเกิดจากการใช้หรือการไม่สามารถใช้ซอฟต์แวร์นี้ได้ แม้ว่าจะได้รับคำแนะนำถึงความเป็นไปได้ของความเสียหายดังกล่าวแล้วก็ตาม
 
-Add this to your `claude_desktop_config.json`:
+ผู้ใช้รับทราบว่าซอฟต์แวร์นี้อาจมีข้อบกพร่องหรือความผิดพลาด และยอมรับความเสี่ยงทั้งหมดอันเกี่ยวเนื่องกับคุณภาพ ประสิทธิภาพ ความถูกต้อง และการทำงานของซอฟต์แวร์
 
-```json
-{
-  "mcpServers": {
-    "ragdocs": {
-      "command": "python",
-      "args": [
-        "-m",
-        "ragdocs.server"
-      ],
-      "env": {
-        "QDRANT_URL": "http://localhost:6333",
-        "QDRANT_COLLECTION": "documentation",
-        "EMBEDDING_PROVIDER": "ollama",
-        "OLLAMA_URL": "http://localhost:11434"
-      }
-    }
-  }
-}
-```
+ผู้ใช้ต้องปฏิบัติตามกฎหมาย ระเบียบ และข้อบังคับที่เกี่ยวข้องทั้งหมดในการใช้ซอฟต์แวร์นี้ รวมถึงแต่ไม่จำกัดเพียงกฎหมายคุ้มครองข้อมูลส่วนบุคคล กฎหมายลิขสิทธิ์ และข้อตกลงการอนุญาตใช้สิทธิใดๆ ที่เกี่ยวข้อง
 
-For Conda, replace `"command": "python"` with the full path to your Conda environment's Python.
-
-## Requirements
-
-- Python 3.10+
-- [Qdrant](https://qdrant.tech/) vector database (local or remote)
-- [Ollama](https://ollama.ai/) for local embeddings or OpenAI API key
-
-## Tools
-
-RAGDocs provides the following tools:
-
-1. **add_documentation** - Add documentation from a URL
-2. **search_documentation** - Search through stored documentation
-3. **list_sources** - List all documentation sources
-4. **add_directory** - Add files from a directory to the database
-
-## License
-
-MIT
+การใช้ซอฟต์แวร์นี้ถือเป็นการยอมรับข้อกำหนดและเงื่อนไขทั้งหมดที่ระบุไว้ในข้อความปฏิเสธความรับผิดชอบนี้
