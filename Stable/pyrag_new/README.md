@@ -47,9 +47,9 @@
    {
      "mcpServers": {
         "mcp-rag-qdrant-1.0": {
-        "command": "/opt/homebrew/Caskroom/miniforge/base/envs/mcp-rag-qdrant-1.0/bin/python",
+        "command": "/path/to/conda/bin/python",
         "args": [
-          "/Users/grizzlystudio/Desktop/github/mcp-server/Stable/pyrag_new/run.py",
+          "/path/to/run.py",
           "--mode",
           "mcp"
         ],
