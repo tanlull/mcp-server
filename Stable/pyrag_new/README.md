@@ -18,6 +18,8 @@
 
    conda activate mcp-rag-qdrant-1.0
    pip install ollama
+
+   ollama pull nomic-embed-text
    ```
 
    สคริปต์จะทำสิ่งต่อไปนี้:
