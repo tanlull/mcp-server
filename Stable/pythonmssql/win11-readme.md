@@ -1,5 +1,8 @@
 # MSSQL Server for MSSQL สำหรับ Windows 11
 
+สิ่งที่ต้องมีก่อนเริ่มต้นการติดตั้ง คือ miniconda
+หากยังไม่มี ให้ติดตั้ง miniconda ตามขั้นตอน https://www.anaconda.com/docs/getting-started/miniconda/install#windows-installation
+*** เราสามารถใช้ miniconda แทน conda ได้
 
 ## วิธีการติดตั้ง MCP server for MSSQL เฉพาะกรณียังไม่เคยติดตั้งมาก่อน
 
