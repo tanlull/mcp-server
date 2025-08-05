@@ -10,10 +10,11 @@ import pymssql
 from sqlalchemy import create_engine, text
 
 # MSSQL connection details
-DB_SERVER = '34.134.173.24'
+DB_SERVER = '130.211.223.6'
 DB_NAME = 'Telco'
 DB_USER = 'SA'
 DB_PASSWORD = 'Passw0rd123456'
+
 
 def test_connection():
     """Test connection to the MSSQL database."""

@@ -13,7 +13,7 @@ DEFAULT_CONFIG = {
     },
     "database": {
         "url": "http://localhost:6333",
-        "collection": "documentation",
+        "collection": "aekanundocumentation",
         "backup_dir": "./backup"
     },
     "embedding": {
