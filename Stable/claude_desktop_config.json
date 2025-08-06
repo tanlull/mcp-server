@@ -1,0 +1,34 @@
+{
+  "mcpServers": {
+    "mcp-mssql-1.0": {
+      "command": "C:/Users/tanlu/.conda/envs/mcp-mssql-1.0/python.exe",
+      "args": ["C:/Users/tanlu/git/mcp-server/Stable/pythonmssql/mssql_server.py"]
+    },
+	 "mcp-rag-qdrant-1.0": {
+     "command": "C:/Users/tanlu/.conda/envs/mcp-rag-qdrant-1.0/python.exe",
+     "args": [
+       "C:/Users/tanlu/git/mcp-server/Stable/pyrag_new/run.py",
+       "--mode",
+       "mcp"
+     ],
+     "env": {
+       "QDRANT_URL": "http://34.172.249.243:6333",
+       "EMBEDDING_PROVIDER": "ollama",
+       "OLLAMA_URL": "http://localhost:11434"
+     }
+   },
+   "filesystem": {
+      "command": "npx",
+      "args": [
+        "-y",
+        "@modelcontextprotocol/server-filesystem",
+        "/tmp"
+      ]
+    },
+	  "thailand-oil-price": {
+      "command": "python",
+      "args": ["C:\\tmp\\thailand-oil-price-mcp\\thailand_oil_price_server.py"],
+      "env": {}
+    }
+  }
+}
