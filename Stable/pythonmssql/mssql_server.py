@@ -9,8 +9,8 @@ from typing import Dict, List, Any, Optional, Union
 from mcp.server.fastmcp import FastMCP
 
 # MSSQL connection details
-DB_SERVER = '130.211.223.6'
-DB_NAME = 'Telco'
+DB_SERVER = '34.102.100.131'
+DB_NAME = 'TestDB'
 DB_USER = 'SA'
 DB_PASSWORD = 'Passw0rd123456'
 
